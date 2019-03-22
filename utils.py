@@ -2,12 +2,11 @@
 # -*- coding:utf-8 -*-
 # @author = yuci
 # Date: 19-3-18 上午11:11
-"""
+"""第二步 工具集合
 define some utils in this file.
 Code imported from https://github.com/Cysu/open-reid/.
 """
 import torch
-from torch.nn import Parameter
 import os
 import os.path as osp
 import sys
@@ -123,3 +122,6 @@ def load_checkpoint(fpath):  # 加载checkpoint文件
 	if osp.isfile(fpath):
 		checkpoint = torch.load(fpath)
 		print("=> Loaded checkpoint '{}'".format(fpath))
+		return checkpoint
+	else:
+		raise ValueError("=> No checkpoint found at '{}'".format(fpath))
