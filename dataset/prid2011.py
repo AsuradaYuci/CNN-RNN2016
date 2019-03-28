@@ -38,10 +38,10 @@ class PRID(object):
 		# 三、根据split信息，处理原始数据集。返回数据集，训练集中tracklet的数量，行人id的数量，每个tracklet中图片的数量
 		train, num_train_tracklets, num_train_pids, num_imgs_train = \
 			self._process_data(train_split, cam1=True, cam2=True)
-		query, num_query_tracklets, num_query_pids, num_imgs_query = \
-			self._process_data(test_split, cam1=True, cam2=False)
-		gallery, num_gallery_tracklets, num_gallery_pids, num_imgs_gallery = \
-			self._process_data(test_split, cam1=False, cam2=True)
+		query, num_query_tracklets, num_query_pids, num_imgs_query, query_pid, query_camid = \
+			self._process_data2(test_split, cam1=True, cam2=False)
+		gallery, num_gallery_tracklets, num_gallery_pids, num_imgs_gallery, gallery_pid, gallery_camid = \
+			self._process_data2(test_split, cam1=False, cam2=True)
 
 		# 四、统计下每个视频序列的长度信息
 		num_imgs_per_tracklet = num_imgs_train + num_imgs_query + num_imgs_gallery  # 列表
@@ -60,6 +60,16 @@ class PRID(object):
 		self.num_train_pids = num_train_pids
 		self.num_query_pids = num_query_pids
 		self.num_gallery_pids = num_gallery_pids
+
+		self.queryinfo = infostruct()
+		self.queryinfo.pid = query_pid
+		self.queryinfo.camid = query_camid
+		self.queryinfo.tranum = num_imgs_query
+
+		self.galleryinfo = infostruct()
+		self.galleryinfo.pid = gallery_pid
+		self.galleryinfo.camid = gallery_camid
+		self.galleryinfo.tranum = num_imgs_gallery
 
 		# 七、打印数据集的一些基本信息
 		print("=> PRID-2011 loaded")
@@ -109,3 +119,36 @@ class PRID(object):
 
 		return tracklets, num_tracklets, num_pid, num_imgs_per_tracklet
 
+	def _process_data2(self, dirnames, cam1=True, cam2=True):
+		tracklets = []  # 列表，存放每个id的视频序列, 行人id，cam id
+		num_imgs_per_tracklet = []  # 统计每个tracklet中的图片数目
+		dirname2pid = {dirname: i for i, dirname in enumerate(dirnames)}  # 根据数据集特点，将文件名字转换为连续的id
+		pid_list = []
+		camid_list = []
+
+		for dirname in dirnames:
+			if cam1:  # cam_a 摄像头中数据
+				person_dir = osp.join(self.cam_a_path, dirname)  # 获得对应行人id的文件夹路径
+				img_names = glob.glob(osp.join(person_dir, '*.png'))  # 使用glob函数，获取文件夹中所有图片的路径
+				assert len(img_names) > 0
+				img_names = tuple(img_names)  # 将所有图片路径存在一个元组中
+				pid = dirname2pid[dirname]  # 根据数据集特点，将文件夹名字转换为行人id
+				tracklets.append((img_names, pid, 0))
+				pid_list.append(pid)
+				camid_list.append(0)
+				num_imgs_per_tracklet.append(len(img_names))
+			if cam2:
+				person_dir = osp.join(self.cam_b_path, dirname)  # 获得对应行人id的文件夹路径
+				img_names = glob.glob(osp.join(person_dir, '*.png'))  # 使用glob函数，获取文件夹中所有图片的路径
+				assert len(img_names) > 0
+				img_names = tuple(img_names)  # 将所有图片路径存在一个元组中
+				pid = dirname2pid[dirname]  # 根据数据集特点，将文件夹名字转换为行人id
+				tracklets.append((img_names, pid, 1))
+				pid_list.append(pid)
+				camid_list.append(1)
+				num_imgs_per_tracklet.append(len(img_names))
+
+		num_tracklets = len(tracklets)  # 最后统计下视频序列的个数
+		num_pid = len(dirnames)  # 统计行人的id数
+
+		return tracklets, num_tracklets, num_pid, num_imgs_per_tracklet, pid_list, camid_list

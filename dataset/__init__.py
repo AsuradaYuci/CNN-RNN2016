@@ -9,7 +9,7 @@ from .prid2011 import PRID
 
 def get_sequence(name, *args, **kwargs):
     __factory = {
-        'prid2011sequence': PRID,
+        'prid2011': PRID,
     }
 
     if name not in __factory:
