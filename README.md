@@ -35,3 +35,8 @@ P.3 Training
     2.The dataset is too small, we can change the dataset generation way to extend 
       the dataset. Maybe like the paper 'Video Person Re-identification with
       Competitive Snippet-similarity Aggregation and Co-attentive Snippet Embedding'.
+  
+  # Reference
+[Recurrent-Convolutional-Video-ReID](https://github.com/niallmcl/Recurrent-Convolutional-Video-ReID)
+
+[Spatial-Temporal-Pooling-Networks-ReID](https://github.com/YuanLeung/Spatial-Temporal-Pooling-Networks-ReID)
