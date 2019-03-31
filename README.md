@@ -24,6 +24,7 @@ P.1 use the official split to form dataset, the dataset is too small.
  | query  | 89| 89 | 
  | gallery  | 89| 89 |
  | total   |  178| 356 |
+
 P.2 Data Augmentation
 
     1.mirror is not implemented
